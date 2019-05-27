@@ -11,6 +11,7 @@ import com.google.ar.core.Anchor
 import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.animation.ModelAnimator
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
@@ -28,6 +29,28 @@ class MainActivity : AppCompatActivity() {
         fragment = (supportFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment)
         modelLoader = ModelLoader(WeakReference(this))
         initGallery()
+    }
+
+    private fun startAnimation(node: TransformableNode, renderable: ModelRenderable?): ModelAnimator? {
+        if (renderable == null || renderable.animationDataCount == 0) {
+            return null
+        }
+        for (i in 0 until renderable.animationDataCount) {
+            val animationData = renderable.getAnimationData(i)
+        }
+        val animator = ModelAnimator(renderable.getAnimationData(0), renderable)
+        animator.start()
+        return animator
+    }
+
+    fun togglePauseAndResume(animator: ModelAnimator) {
+        if (animator.isPaused) {
+            animator.resume()
+        } else if (animator.isStarted) {
+            animator.pause()
+        } else {
+            animator.start()
+        }
     }
 
     private fun getScreenCenter(): android.graphics.Point {
@@ -89,6 +112,14 @@ class MainActivity : AppCompatActivity() {
         node.setParent(anchorNode)
         fragment.arSceneView.scene.addChild(anchorNode)
         node.select()
+        startAnimation(node = node, renderable = renderable).apply {
+            this.let {
+                node.setOnTapListener { _, _ ->
+                    togglePauseAndResume(animator = this!!)
+                }
+            }
+        }
+
     }
 
     fun onException(throwable: Throwable) {
