@@ -24,7 +24,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.content_main)
+        fragment = (supportFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment)
         modelLoader = ModelLoader(WeakReference(this))
         initGallery()
     }
